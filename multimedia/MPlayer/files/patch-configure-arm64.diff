@@ -1,6 +1,6 @@
---- configure.orig	2021-11-05 21:56:54.000000000 -0400
-+++ configure	2021-11-05 22:12:54.000000000 -0400
-@@ -642,6 +642,7 @@
+--- configure.orig	2021-11-05 23:09:16.000000000 -0400
++++ configure	2021-11-05 23:12:29.000000000 -0400
+@@ -643,6 +643,7 @@
  vfpv3=auto
  setend=auto
  neon=auto
@@ -8,7 +8,7 @@
  armthumb=auto
  _iwmmxt=auto
  _mtrr=auto
-@@ -1716,7 +1717,7 @@
+@@ -1752,7 +1753,7 @@
        alpha) host_arch=alpha ;;
        sun4*|sparc*) host_arch=sparc ;;
        parisc*|hppa*|9000*) host_arch=hppa ;;
@@ -17,16 +17,27 @@
        arm*|zaurus|cats) host_arch=arm ;;
        sh3|sh4|sh4a) host_arch=sh ;;
        s390) host_arch=s390 ;;
-@@ -3236,7 +3237,7 @@
+@@ -3134,8 +3135,8 @@
+ 
+     # check if AltiVec is supported by the compiler, and how to enable it
+     echocheck "GCC AltiVec flags"
+-    if $(cflag_check -maltivec -mabi=altivec) ; then
+-    _altivec_gcc_flags="-maltivec -mabi=altivec"
++    if $(cflag_check -faltivec -maltivec -mabi=altivec) ; then
++    _altivec_gcc_flags="-faltivec -maltivec -mabi=altivec"
+     # check if <altivec.h> should be included
+         if $(header_check altivec.h $_altivec_gcc_flags) ; then
+             def_altivec_h='#define HAVE_ALTIVEC_H 1'
+@@ -3278,7 +3279,7 @@
    echores "$_iwmmxt"
  fi
  
--cpuexts_all='ALTIVEC XOP AVX AVX2 FMA3 FMA4 MMX MMX2 MMXEXT AMD3DNOW AMD3DNOWEXT SSE SSE2 SSE3 SSSE3 SSE4 SSE42 FAST_CMOV I686 FAST_CLZ ARMV5TE ARMV6 ARMV6T2 VFP VFPV3 SETEND NEON IWMMXT MMI VIS MVI'
-+cpuexts_all='ALTIVEC XOP AVX AVX2 FMA3 FMA4 MMX MMX2 MMXEXT AMD3DNOW AMD3DNOWEXT SSE SSE2 SSE3 SSSE3 SSE4 SSE42 FAST_CMOV I686 FAST_CLZ ARMV5TE ARMV6 ARMV6T2 VFP VFPV3 SETEND NEON ARMV8 IWMMXT MMI VIS MVI'
+-cpuexts_all='ALTIVEC XOP AVX AVX2 AVX512 FMA3 FMA4 MMX MMX2 MMXEXT AMD3DNOW AMD3DNOWEXT SSE SSE2 SSE3 SSSE3 SSE4 SSE42 FAST_CMOV I686 FAST_CLZ ARMV5TE ARMV6 ARMV6T2 VFP VFPV3 SETEND NEON IWMMXT MMI VIS MVI'
++cpuexts_all='ALTIVEC XOP AVX AVX2 AVX512 FMA3 FMA4 MMX MMX2 MMXEXT AMD3DNOW AMD3DNOWEXT SSE SSE2 SSE3 SSSE3 SSE4 SSE42 FAST_CMOV I686 FAST_CLZ ARMV5TE ARMV6 ARMV6T2 VFP VFPV3 SETEND NEON ARMV8 IWMMXT MMI VIS MVI'
  test "$_altivec"   = yes && cpuexts="ALTIVEC $cpuexts"
  test "$_mmx"       = yes && cpuexts="MMX $cpuexts"
  test "$_mmxext"    = yes && cpuexts="MMX2 $cpuexts"
-@@ -3264,6 +3265,7 @@
+@@ -3307,6 +3308,7 @@
  test "$vfpv3"      = yes && cpuexts="VFPV3 $cpuexts"
  test "$setend"     = yes && cpuexts="SETEND $cpuexts"
  test "$neon"       = yes && cpuexts="NEON $cpuexts"
@@ -34,3 +45,13 @@
  test "$_iwmmxt"    = yes && cpuexts="IWMMXT $cpuexts"
  test "$_vis"       = yes && cpuexts="VIS $cpuexts"
  test "$_mvi"       = yes && cpuexts="MVI $cpuexts"
+@@ -6694,6 +6696,9 @@
+   _tremor=no
+   statement_check tremor/ivorbiscodec.h 'vorbis_synthesis(0, 0)' -logg -lvorbisidec && _tremor=yes && _libvorbis=no
+ fi
++if test "$_libvorbis" = yes; then
++  vorbislibs=$($_pkg_config --libs vorbisenc vorbis)
++fi
+ if test "$_libvorbis" = auto; then
+   _libvorbis=no
+   for vorbislibs in '-lvorbisenc -lvorbis -logg' '-lvorbis -logg' ; do
